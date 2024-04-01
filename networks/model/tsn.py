@@ -5,8 +5,8 @@
 
 from torch import nn
 
-from networks.model.opts.basic_ops import ConsensusModule
-from networks.model.opts.transforms import *
+from networks.model.tsn.basic_ops import ConsensusModule
+from networks.model.tsn.transforms import *
 from torch.nn.init import normal_, constant_
 
 
