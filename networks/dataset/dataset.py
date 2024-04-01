@@ -18,7 +18,7 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from torch.utils.data import IterableDataset
 
-from networks.dataset.data_processor import DataProcessor, AVDataBatch
+from networks.dataset.data_processor import DataProcessor
 
 
 class Processor(IterableDataset):

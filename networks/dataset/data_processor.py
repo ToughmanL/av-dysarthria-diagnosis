@@ -20,7 +20,8 @@ import numpy as np
 
 from torchvision.io import read_video
 import torchvision.transforms.functional as F
-from networks.dataset.transforms import get_transform
+import networks.dataset.video_process
+
 
 class DataProcessor():
   def __init__(self, label, target_len, setment_dir=None) -> None:
@@ -212,17 +213,6 @@ class DataProcessor():
           stft = stft[:,:,:target_len]
         yield (stft.to(torch.float32), label_score.to(torch.float32))
   
-  def get_cmlrv(self, data, label):
-    for dataframe_dict in data:
-      if 'src' in dataframe_dict:
-        obj = dataframe_dict['src']
-      else:
-        obj = dataframe_dict
-      label_score = torch.as_tensor(obj[label])
-      tensor_data = torch.load(obj['path'], map_location=torch.device('cpu'))
-      yield tensor_data, label_score.float()
-    # mean: tensor(-0.0116) std: tensor(0.5150)
-
   def get_wavsegment(self, data,
                  num_mel_bins=23,
                  frame_length=25,
@@ -291,7 +281,7 @@ class DataProcessor():
       npy_path = np.load(obj['path'])
       tensor_data = torch.from_numpy(npy_path)
       yield tensor_data.float(), label_score.float()
-  
+
   def get_videoflow(self, data, label):
     for dataframe_dict in data:
       if 'src' in dataframe_dict:
@@ -300,15 +290,8 @@ class DataProcessor():
         obj = dataframe_dict
       label_score = torch.as_tensor(obj[label])
       avi_path = np.load(obj['path'])
-      cap = cv2.VideoCapture(avi_path)
-      frames = []
-      while cap.isOpened():
-        ret, frame = cap.read()
-        if not ret:
-          break
-        gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) # Convert to grayscale
-        frames.append(gray_frame)
-      tensor_data = get_transform(frames)
+      flow_data = video_process.calculate_optical_flow(frames)
+      tensor_data = torch.from_numpy(flow_data)
       yield tensor_data.float(), label_score.float()
 
   def padding(self, data):
@@ -330,37 +313,6 @@ class DataProcessor():
         feat_buf, label_buf = [], []
     if len(feat_buf) > 0:
       yield torch.stack(feat_buf), torch.stack(label_buf)
-
-def AVDataBatch(samples):
-  audio_modality, video_modality = False, False
-  if samples[0]['loop_feat'] != None:
-    audio_modality = True
-  if samples[0]['video_vowels'] != None:
-    video_modality = True
-  batch_loop_feat, batch_avi_data, batch_label = [], [], []
-  if video_modality:
-    max_len = max(tensor.shape[0] for sublist in samples for tensor in sublist['video_vowels'])
-  for sample in samples:
-    if audio_modality:
-      batch_loop_feat.append(sample['loop_feat'])
-    else:
-      batch_loop_feat.append(torch.zeros(20))
-    if video_modality:
-      six_vowels_list = []
-      for video_tensor in sample['video_vowels']:
-        zeros_to_pad = torch.zeros((max_len-video_tensor.shape[0], *tuple(video_tensor.size()[1:])))
-        padded_tensor =  torch.cat((video_tensor, zeros_to_pad), dim=0)
-        trans_video_tensor = torch.transpose(padded_tensor, 0, 1)
-        six_vowels_list.append(trans_video_tensor.unsqueeze(0))
-      six_vowels_tensor = torch.cat(six_vowels_list, dim=0)
-      batch_avi_data.append(six_vowels_tensor)
-    else:
-      batch_avi_data.append(torch.zeros(6, 1, 1, 80, 80))
-    batch_label.append(sample['label'])
-  batch_loop_feat_tensor = torch.stack(batch_loop_feat)
-  batch_avi_data_tensor = torch.stack(batch_avi_data)
-  batch_label_tensor = torch.stack(batch_label)
-  return batch_loop_feat_tensor, batch_avi_data_tensor, batch_label_tensor
 
 
 def test_hubert():
