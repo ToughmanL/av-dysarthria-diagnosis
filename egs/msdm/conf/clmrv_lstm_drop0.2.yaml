@@ -1,0 +1,31 @@
+# base config
+data_path: 'data/MSDM/cmlrv'
+dataloader: 'IterDataset'
+feat_type: 'cmlrv'
+model_name: 'lstm'
+model_dir: 'exp/CMLRV_LSTM_1/'
+
+task_info:
+    type: 'classification'
+    label_name: 'classification'
+    score: 4 # classification num
+
+# task_type:
+#   regression:
+#     label_name: 'Frenchay'
+#     score: 116
+# {'Frenchay':116, 'fanshe':12, 'huxi':8, 'chun':20, 'he':8, 'ruane':12, 'hou':16, 'she':24,'yanyu':16, 'classification':1}
+
+
+input_dim: 256
+hidden_dim: 128
+output_dim: 4
+dropout: 0.2
+BATCH_SIZE: 32
+
+earlystop: 5
+sample_rate: 1
+EPOCHS: 100
+
+LEARNING_RATE: 0.001
+# gnncustom基础上进行试验，对标签进行标准化
