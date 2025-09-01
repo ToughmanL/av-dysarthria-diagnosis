@@ -1,5 +1,7 @@
 # AV-Dysarthria-Diagnosis
 
+**语言/Language**: [中文](README.md) | [English](README_EN.md)
+
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/) 
 [![PyTorch](https://img.shields.io/badge/PyTorch-1.12%2B-red)](https://pytorch.org/)
