@@ -1,0 +1,22 @@
+# Directories to ignore
+modalities/
+egs/*/data/
+egs/*/exp/
+egs/*/log/
+egs/*/conf/other_conf/
+egs/*/.vscode/
+
+# data files
+*.wav
+*.avi
+*.pkl
+*.mp4
+*.csv
+*.pt
+*.npy
+
+# tmp files
+*.log
+*.tmp
+*.bak
+

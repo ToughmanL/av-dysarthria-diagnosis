@@ -1,0 +1,57 @@
+# base config
+data_path: '/tmp/MSDM/crop_video/cropvideo.json'
+dataloader: 'IterDataset'
+model_name: 'crossshareav_resnetseq10_tsnsegsplit_cosineatt'
+model_dir: 'exp/crossshareav_resnetseq10_tsnsegsplit_cosineatt/'
+
+audio_conf:
+    resnum: 10 # ResNet18, ResNet34, ResNet50, ResNet101, ResNet152
+    model_init: null
+    model_args:
+    input_dim: 80
+    embed_dim: 32
+    pooling_func: "ASP"
+    two_emb_layer: False
+    project_type: "arc_margin" # add_margin, arc_margin, sphere, softmax
+    scale: 32.0
+    easy_margin: False
+    # enc_init: 'exp/resnetseq10_300f_linear/models/classification_fold_0_best.pt'
+    encoder_flag: -1
+
+visual_conf:
+    out_dim: 32
+    num_segments: -4
+    modality: 'RGB+PA'
+    new_length: 61
+    v_num_frms: 61
+    consensus_type: 'avg'
+    window_size: 4
+    dropout: 0.6
+    # checkpoint: 'exp/ts_rgbpaflow_TSN_seg-4split4/models/classification_fold_0_best.pt'
+
+batch_size: 64
+audiofeat: fbank
+videofeat: cropvideo_rgb
+av_fusion_type: concat
+av_corss_type: 'AV'
+att_type: 'base'
+similarity_type: 'cosine'
+cmvn_file: "data/global_cmvn_80"
+a_num_frms: 300
+v_num_frms: 61
+
+task_info:
+    type: 'classification'
+    label_name: 'classification'
+    score: 4 # classification num
+
+input_dim: 80
+output_dim: 4
+dropout: 0.1
+
+earlystop: 10
+sample_rate: 1
+EPOCHS: 150
+train_type: speech
+
+LEARNING_RATE: 0.002
